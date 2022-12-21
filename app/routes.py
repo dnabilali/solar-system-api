@@ -6,6 +6,7 @@ from .models.planet import Planet
 planets_bp = Blueprint("planets", __name__, url_prefix = "/planets")
 
 # ~~~~~~ Handle planet id errors ~~~~~
+# FUTURE IDEAS: Create separate helper function module or add as class method
 def validate_id(planet_id):
     """
     - check for valid id type and if exists
@@ -73,4 +74,17 @@ def create_planet():
     db.session.add(new_planet)
     db.session.commit()
 
-    return make_response({"message":"planet has been created successfully"}, 200)
+    return make_response({"message":"planet has been created successfully"}, 201)
+
+@planets_bp.route("/<planet_id>", methods=["PUT"])
+def update_planet(planet_id):
+    request_body = request.get_json()
+    planet = validate_id(planet_id)
+    planet.name = request_body["name"] if "name" in request_body else planet.name 
+    planet.description = request_body["description"] if "description" in request_body else planet.description
+    planet.mass = request_body["mass"] if "mass" in request_body else planet.mass
+    db.session.commit()
+    return make_response(
+        {"message": f"planet #{planet_id} Updated Successfully"}, 200
+    )
+
