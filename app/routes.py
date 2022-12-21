@@ -80,6 +80,9 @@ def create_planet():
 def update_planet(planet_id):
     request_body = request.get_json()
     planet = validate_id(planet_id)
+    # ~~~ REFACTOR ISSUE ~~~ This line runs but a problem with updating the db 
+    # for attr in request_body:
+    #     planet.attr = request_body[attr]
     planet.name = request_body["name"] if "name" in request_body else planet.name 
     planet.description = request_body["description"] if "description" in request_body else planet.description
     planet.mass = request_body["mass"] if "mass" in request_body else planet.mass
