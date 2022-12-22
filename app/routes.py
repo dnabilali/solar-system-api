@@ -28,11 +28,14 @@ def validate_id(planet_id):
     return planet
 
 
-
 @planets_bp.route("",methods= ["GET"])
 def display_all_planets():
+    planet_name_query = request.args.get("name")
+    if planet_name_query:
+        planets = Planet.query.filter_by(name=planet_name_query)
+    else:
+        planets = Planet.query.all()
     response_planets = []
-    planets = Planet.query.all()
     for planet in planets:
         response_planets.append({
             "id": planet.id,
@@ -80,9 +83,6 @@ def create_planet():
 def update_planet(planet_id):
     request_body = request.get_json()
     planet = validate_id(planet_id)
-    # ~~~ REFACTOR ISSUE ~~~ This line runs but a problem with updating the db 
-    # for attr in request_body:
-    #     planet.attr = request_body[attr]
     planet.name = request_body["name"] if "name" in request_body else planet.name 
     planet.description = request_body["description"] if "description" in request_body else planet.description
     planet.mass = request_body["mass"] if "mass" in request_body else planet.mass
@@ -90,6 +90,7 @@ def update_planet(planet_id):
     return make_response(
         {"message": f"planet #{planet_id} Updated Successfully"}, 200
     )
+
 
 @planets_bp.route("/<planet_id>", methods=["DELETE"])
 def delete_planet(planet_id):
