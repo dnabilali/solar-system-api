@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 db = SQLAlchemy()
-migrate = Migrate()
+migrate = Migrate(compare_type=True)
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -12,7 +12,7 @@ def create_app(test_config=None):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:postgres@localhost:5432/solar_system'
 
     from app.models.planet import Planet
-    
+
     db.init_app(app)
     migrate.init_app(app, db)
 

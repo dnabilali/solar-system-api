@@ -61,10 +61,10 @@ def create_planet():
     request_body = request.get_json()
 
     if "name" not in request_body or "description" not in request_body \
-        or "mass" not in request_body:
+            or "mass" not in request_body:
         abort(make_response({"message" : \
-            "Failed to create a planet because the name and/or description \
-            and/or mass are missing"}, 400))
+                "Failed to create a planet because the name and/or description \
+                and/or mass are missing"}, 400))
 
     new_planet = Planet(
         name=request_body["name"],
