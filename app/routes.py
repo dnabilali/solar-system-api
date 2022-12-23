@@ -5,36 +5,76 @@ from .models.planet import Planet
 
 planets_bp = Blueprint("planets", __name__, url_prefix = "/planets")
 
-# ~~~~~~ Handle planet id errors ~~~~~
-# FUTURE IDEAS: Create separate helper function module or add as class method
+
+# ~~~~~~ Helper functions ~~~~~
+# TO DO: Create separate helper function module or add as class method #
 def validate_id(planet_id):
     """
-    - check for valid id type and if exists
-    - return planet object if valid planet id
+    Checks if planet id is valid and returns error messages for invalid inputs
+    :params:
+    - planet_id (int)
+    :returns:
+    - planet (object) if valid planet id valid
     """
     try:
         planet_id_int = int(planet_id)
     except:
         # handling invalid planet id type
         abort(make_response({"message": f"{planet_id} is an invalid planet id"}, 400))
-    
+
     # return planet data if id in db
     planet = Planet.query.get(planet_id)
 
     # handle nonexistant planet id
     if not planet:
         abort(make_response({"message": f"{planet_id} not found"}, 404))
-
     return planet
+
+def process_args(queries):
+    """
+    Separate kwargs from HTTP request into separate dicts based on SQLAlchemy query method
+    :params:
+    - queries (dict)
+    :returns:
+    - attrs (dict): planet class attributes kwargs for filter_by
+        ** name, description, mass
+    - orderby (dict): method kwargs for order_by
+        ** sort_mass, sort_name
+    - sels (dict): selected number of results for limit
+    """
+    # turn line 45 into a Planet class method
+    planet_attrs = [attr for attr in dir(Planet) if not attr.startswith('__')]
+    order_methods = ["sort"]
+    attrs = {}
+    orderby = {}
+    sels = {}
+    for kwarg in queries:
+        if kwarg in planet_attrs:
+            attrs[kwarg] = queries[kwarg]
+        elif kwarg in order_methods:
+            orderby[kwarg] = queries[kwarg]
+        elif kwarg == "limit":
+            sels[kwarg] = queries[kwarg]
+        else:
+            abort(make_response(
+                {"message" : f"{kwarg} is an invalid query"}, 400
+            ))
+    return attrs, orderby, sels
 
 
 @planets_bp.route("",methods= ["GET"])
 def display_all_planets():
-    planet_name_query = request.args.get("name")
-    if planet_name_query:
-        planets = Planet.query.filter_by(name=planet_name_query)
-    else:
-        planets = Planet.query.all()
+    planet_query = Planet.query
+    attrs, orderby, sels = process_args(request.args.to_dict())
+    if attrs:
+        planet_query = planet_query.filter_by(**attrs)
+    # TO DO: works but only sorts by name currently ascending - need to add modularity
+    if orderby:
+        planet_query = planet_query.order_by(Planet.name.asc())
+    if sels:
+        planet_query = planet_query.limit(**sels)
+    planets = planet_query.all()
+    # fill response
     response_planets = []
     for planet in planets:
         response_planets.append({
