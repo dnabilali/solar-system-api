@@ -30,7 +30,7 @@ def validate_id(planet_id):
         abort(make_response({"message": f"{planet_id} not found"}, 404))
     return planet
 
-def process_args(queries):
+def process_kwargs(queries):
     """
     Separate kwargs from HTTP request into separate dicts based on SQLAlchemy query method
     :params:
@@ -65,7 +65,7 @@ def process_args(queries):
 @planets_bp.route("",methods= ["GET"])
 def display_all_planets():
     planet_query = Planet.query
-    attrs, orderby, sels = process_args(request.args.to_dict())
+    attrs, orderby, sels = process_kwargs(request.args.to_dict())
     if attrs:
         planet_query = planet_query.filter_by(**attrs)
     # TO DO: works but only sorts by name currently ascending - need to add modularity
