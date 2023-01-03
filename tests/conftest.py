@@ -31,3 +31,5 @@ def two_saved_planets(app):
             mass=6.39e23)
     db.session.add_all([earth, mars])
     db.session.commit()
+    for planet in [earth, mars]:
+        db.session.refresh(planet, ["id"])
