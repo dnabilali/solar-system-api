@@ -42,9 +42,8 @@ def process_kwargs(queries):
         ** sort_mass, sort_name
     - sels (dict): selected number of results for limit
     """
-    # turn line 45 into a Planet class method
-    planet_attrs = [attr for attr in dir(Planet) if not attr.startswith('__')]
-    order_methods = ["sort"]
+    planet_attrs = Planet.get_all_attrs()
+    order_methods = ["sort", "desc"]
     attrs = {}
     orderby = {}
     sels = {}
@@ -64,17 +63,27 @@ def process_kwargs(queries):
 
 @planets_bp.route("",methods= ["GET"])
 def display_all_planets():
+    # collect query & parse kwargs
     planet_query = Planet.query
     attrs, orderby, sels = process_kwargs(request.args.to_dict())
     if attrs:
+        #  filter by attribute kwargs e.g name=Earth
         planet_query = planet_query.filter_by(**attrs)
-    # TO DO: works but only sorts by name currently ascending - need to add modularity
-    if orderby:
-        planet_query = planet_query.order_by(Planet.name.asc())
+    if "sort" in orderby:
+        # sort by given attribute e.g.sort=mass
+        clause = getattr(Planet, orderby["sort"])
+        if "desc" in orderby:
+            # sort in descending order e.g.desc=True
+            planet_query = planet_query.order_by(clause.desc())
+        else:
+            # default is asc=True
+            planet_query = planet_query.order_by(clause.asc())
     if sels:
+        # limit selection of planets to view
         planet_query = planet_query.limit(**sels)
+    # perform query
     planets = planet_query.all()
-    # fill response
+    # fill http response
     response_planets = []
     for planet in planets:
         response_planets.append({
@@ -82,8 +91,7 @@ def display_all_planets():
             "name": planet.name,
             "description": planet.description,
             "mass": planet.mass
-        })
-        
+        })  
     return jsonify(response_planets)
 
 
