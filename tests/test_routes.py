@@ -27,3 +27,62 @@ def test_get_planet_by_invalid_id_returns_400(client, two_saved_planets):
     
     assert response.status_code == 400
     assert response.get_json() == {"message": "earth is an invalid planet id"}
+
+def test_get_planet_by_valid_data_returns_data_and_200(client, two_saved_planets):
+    response = client.get("/planets")
+    response_body = response.get_json()
+
+    assert response.status_code == 200
+    assert response_body == [
+        {"name": "Earth",
+        "description": "rocky, terrestrial, full of life",
+        "mass": 5.972e24,
+        "id": 1},
+        {"name": "Mars",
+        "description": "dusty, cold desert",
+        "mass": 6.39e23,
+        "id": 2}
+    ]    
+
+def test_delete_planet_1_with_json_request_body_returns_200(client, two_saved_planets):
+    response = client.delete("/planets/1", json={
+        "name": "Earth",
+        "description": "rocky, terrestrial, full of life",
+        "mass": 5.972e24,
+        "id": 1
+    })
+    response_body = response.get_json()
+    
+    assert response.status_code == 200
+    assert response_body == {"message": f"planet #1 has been deleted successfully"}, 200
+
+def test_get_mass_desc_and_limit_1_returns_data_and_200(client, two_saved_planets):
+    response = client.get("/planets?sort=mass&desc=True&limit=1")
+    response_body = response.get_json()
+
+    assert response.status_code == 200
+    assert response_body == [{
+        "name": "Earth",
+        "description": "rocky, terrestrial, full of life",
+        "mass": 5.972e24,
+        "id": 1
+    }]
+
+def test_get_name_desc_and_limit_1_returns_data_and_200(client, two_saved_planets):
+    response = client.get("/planets?sort=name&desc=True&limit=1")
+    response_body = response.get_json()
+
+    assert response.status_code == 200
+    assert response_body == [{
+        "name": "Mars",
+        "description": "dusty, cold desert",
+        "mass": 6.39e23,
+        "id": 2
+    }]
+
+def test_get_by_invalid_query_returns_error_message_and_400(client, two_saved_planets):
+    response = client.get("/planets?hamster=True")
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {"message": "hamster is an invalid query"}
