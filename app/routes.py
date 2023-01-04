@@ -117,10 +117,12 @@ def create_planet():
                 "Failed to create a planet because the name and/or description \
                 and/or mass are missing"}, 400))
 
-    new_planet = Planet(
-        name=request_body["name"],
-        description=request_body["description"],
-        mass=request_body["mass"])
+    # new_planet = Planet(
+    #     name=request_body["name"],
+    #     description=request_body["description"],
+    #     mass=request_body["mass"])
+
+    new_planet = Planet.from_dict(request_body)
 
     db.session.add(new_planet)
     db.session.commit()
