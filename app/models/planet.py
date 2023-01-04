@@ -12,6 +12,12 @@ class Planet(db.Model):
         Returns all existing attributes (list) in Planet class
         """
         return [attr for attr in dir(Planet) if not attr.startswith('__')]
+
+    @classmethod
+    def from_dict(cls, dict):
+        return Planet(name=dict["name"],
+            description=dict["description"],
+            mass=dict["mass"])
     
     def to_dict(self):
         """
