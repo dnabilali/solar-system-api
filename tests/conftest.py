@@ -29,7 +29,11 @@ def two_saved_planets(app):
             description="rocky, terrestrial, full of life", mass=5.972e24)
     mars = Planet(name="Mars", description="dusty, cold desert", \
             mass=6.39e23)
-    db.session.add_all([earth, mars])
+    planets = [earth, mars]
+    db.session.add_all(planets)
     db.session.commit()
-    for planet in [earth, mars]:
+    
+    for planet in planets:
         db.session.refresh(planet, ["id"])
+
+    return planets
