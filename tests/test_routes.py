@@ -127,3 +127,9 @@ def test_get_by_invalid_query_returns_error_message_and_400(client, two_saved_pl
 
     assert response.status_code == 400
     assert response_body == {"message": "hamster is an invalid query"}
+
+def test_get_by_planet_id_with_to_dict_method_returns_dict(client, two_saved_planets):
+    response = client.get("planets/1")
+    response_body = response.get_json()
+
+    assert type(response_body) == dict
