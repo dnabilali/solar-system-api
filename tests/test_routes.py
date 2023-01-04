@@ -22,9 +22,9 @@ def test_get_one_planet(client, two_saved_planets):
 def test_create_one_planet(client):
     #Act
     response = client.post("/planets", json = {
-         "name": "Neptune", 
-         "description": "thick, windy", 
-         "mass":1.024e26
+        "name": "Neptune", 
+        "description": "thick, windy", 
+        "mass":1.024e26
     })
     response_body = response.get_json()
 
@@ -35,8 +35,8 @@ def test_create_one_planet(client):
 def test_create_one_planet_missing_mass_return_400(client):
     #Act
     response = client.post("/planets", json = {
-         "name": "Neptune", 
-         "description": "thick, windy"
+        "name": "Neptune", 
+        "description": "thick, windy"
     })
     response_body = response.get_json()
     #Assert
@@ -127,9 +127,3 @@ def test_get_by_invalid_query_returns_error_message_and_400(client, two_saved_pl
 
     assert response.status_code == 400
     assert response_body == {"message": "hamster is an invalid query"}
-
-def test_get_by_planet_id_with_to_dict_method_returns_dict(client, two_saved_planets):
-    response = client.get("planets/1")
-    response_body = response.get_json()
-
-    assert type(response_body) == dict
