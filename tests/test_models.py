@@ -54,3 +54,9 @@ def test_from_dict_with_extra_input():
     assert result.name == "Neptune"
     assert result.description == "thick, windy"
     assert result.mass == 1.024e26
+
+def test_get_by_planet_id_with_to_dict_method_returns_dict(client, two_saved_planets):
+    response = client.get("planets/1")
+    response_body = response.get_json()
+
+    assert type(response_body) == dict

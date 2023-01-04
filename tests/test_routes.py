@@ -22,9 +22,9 @@ def test_get_one_planet(client, two_saved_planets):
 def test_create_one_planet(client):
     #Act
     response = client.post("/planets", json = {
-         "name": "Neptune", 
-         "description": "thick, windy", 
-         "mass":1.024e26
+        "name": "Neptune", 
+        "description": "thick, windy", 
+        "mass":1.024e26
     })
     response_body = response.get_json()
 
@@ -35,8 +35,8 @@ def test_create_one_planet(client):
 def test_create_one_planet_missing_mass_return_400(client):
     #Act
     response = client.post("/planets", json = {
-         "name": "Neptune", 
-         "description": "thick, windy"
+        "name": "Neptune", 
+        "description": "thick, windy"
     })
     response_body = response.get_json()
     #Assert

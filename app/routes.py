@@ -60,7 +60,6 @@ def process_kwargs(queries):
             ))
     return attrs, orderby, sels
 
-
 @planets_bp.route("",methods= ["GET"])
 def display_all_planets():
     # collect query & parse kwargs
@@ -86,12 +85,7 @@ def display_all_planets():
     # fill http response
     response_planets = []
     for planet in planets:
-        response_planets.append({
-            "id": planet.id,
-            "name": planet.name,
-            "description": planet.description,
-            "mass": planet.mass
-        })  
+        response_planets.append(planet.to_dict())  
     return jsonify(response_planets)
 
 
@@ -99,13 +93,7 @@ def display_all_planets():
 @planets_bp.route("/<planet_id>",methods=["GET"])
 def display_planet(planet_id):
     valid_planet = validate_id(planet_id)
-    return {
-        "id": valid_planet.id,
-        "name": valid_planet.name,
-        "description": valid_planet.description,
-        "mass": valid_planet.mass,
-    }
-
+    return valid_planet.to_dict()
 
 @planets_bp.route("", methods=["POST"])
 def create_planet():
