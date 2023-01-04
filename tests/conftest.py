@@ -32,7 +32,7 @@ def two_saved_planets(app):
     planets = [earth, mars]
     db.session.add_all(planets)
     db.session.commit()
-    
+
     for planet in planets:
         db.session.refresh(planet, ["id"])
 
