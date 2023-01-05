@@ -1,11 +1,7 @@
 from app import db
 from flask import Blueprint, jsonify, abort, make_response, request
-<<<<<<< Updated upstream:app/routes.py
-from .models.planet import Planet
-=======
 from app.models.planet import Planet
 from app.models.moon import Moon
->>>>>>> Stashed changes:app/routes/planets_routes.py
 
 
 planets_bp = Blueprint("planets", __name__, url_prefix = "/planets")
