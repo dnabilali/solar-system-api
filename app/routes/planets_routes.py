@@ -6,7 +6,6 @@ from app.models.moon import Moon
 
 planets_bp = Blueprint("planets", __name__, url_prefix = "/planets")
 
-
 # ~~~~~~ Helper functions ~~~~~
 # TO DO: Create separate helper function module or add as class method #
 def validate_model(cls, model_id):

@@ -6,6 +6,7 @@ class Planet(db.Model):
     name = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
     mass = db.Column(db.Float, nullable=False)
+    moons = db.relationship("Moon", back_populates="planet")
     
     @classmethod
     def get_all_attrs(cls):
