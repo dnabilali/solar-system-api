@@ -7,7 +7,8 @@ class Planet(db.Model):
     description = db.Column(db.String, nullable=False)
     mass = db.Column(db.Float, nullable=False)
     
-    def get_all_attrs():
+    @classmethod
+    def get_all_attrs(cls):
         """
         Returns all existing attributes (list) in Planet class
         """
