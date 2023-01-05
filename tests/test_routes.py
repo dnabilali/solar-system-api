@@ -41,9 +41,7 @@ def test_create_one_planet_missing_mass_return_400(client):
     response_body = response.get_json()
     #Assert
     assert response.status_code == 400
-    assert response_body == {"message" : \
-                "Failed to create a planet because the name and/or description \
-                and/or mass are missing"}
+    assert response_body == {"message" : "Failed to create Planet because mass is missing"}
 
 
 def test_get_planet_by_id_with_empty_db_returns_404(client):

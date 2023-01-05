@@ -2,13 +2,11 @@ from app import db
 from flask import Blueprint, jsonify, abort, make_response, request
 from .models.planet import Planet
 
-
 planets_bp = Blueprint("planets", __name__, url_prefix = "/planets")
 
 
-# ~~~~~~ Helper functions ~~~~~
-# TO DO: Create separate helper function module or add as class method #
-def validate_id(cls, planet_id):
+# ~~~~~~ Validate functions ~~~~~
+def validate_planet(cls, planet_id):
     """
     Checks if planet id is valid and returns error messages for invalid inputs
     :params:
@@ -17,18 +15,31 @@ def validate_id(cls, planet_id):
     - planet (object) if valid planet id valid
     """
     try:
-        planet_id_int = int(planet_id)
+        planet_id = int(planet_id)
     except:
         # handling invalid planet id type
         abort(make_response({"message": f"{cls.__name__} {planet_id} is an invalid planet id"}, 400))
-
     # return planet data if id in db
     planet = cls.query.get(planet_id)
-
     # handle nonexistant planet id
     if not planet:
         abort(make_response({"message": f"{cls.__name__} {planet_id} not found"}, 404))
     return planet
+
+def validate_post_request(cls, request):
+    """
+    Checks if post request contains all required planet data
+    :returns:
+    - request_body (if all requirements present)
+    """
+    request_body = request.get_json()
+    requirements = ["name", "description", "mass"]
+    for req in request_body:
+        if req not in requirements:
+            abort(make_response({
+                f"Failed to create {cls.__name__} because {req} is missing"
+            }, 400))
+    return request_body
 
 def process_kwargs(queries):
     """
@@ -92,35 +103,21 @@ def display_all_planets():
 # ~~~~~~ Single planet endpoint ~~~~~~
 @planets_bp.route("/<planet_id>",methods=["GET"])
 def display_planet(planet_id):
-    valid_planet = validate_id(Planet, planet_id)
+    valid_planet = validate_planet(Planet, planet_id)
     return valid_planet.to_dict()
 
 @planets_bp.route("", methods=["POST"])
 def create_planet():
-    request_body = request.get_json()
-
-    if "name" not in request_body or "description" not in request_body \
-            or "mass" not in request_body:
-        abort(make_response({"message" : \
-                "Failed to create a planet because the name and/or description \
-                and/or mass are missing"}, 400))
-
-    # new_planet = Planet(
-    #     name=request_body["name"],
-    #     description=request_body["description"],
-    #     mass=request_body["mass"])
-
+    request_body = validate_post_request(Planet, request)
     new_planet = Planet.from_dict(request_body)
-
     db.session.add(new_planet)
     db.session.commit()
-
     return make_response({"message":"planet has been created successfully"}, 201)
 
 @planets_bp.route("/<planet_id>", methods=["PUT"])
 def update_planet(planet_id):
     request_body = request.get_json()
-    planet = validate_id(Planet, planet_id)
+    planet = validate_planet(Planet, planet_id)
     planet.name = request_body["name"] if "name" in request_body else planet.name 
     planet.description = request_body["description"] if "description" in request_body else planet.description
     planet.mass = request_body["mass"] if "mass" in request_body else planet.mass
@@ -132,7 +129,7 @@ def update_planet(planet_id):
 
 @planets_bp.route("/<planet_id>", methods=["DELETE"])
 def delete_planet(planet_id):
-    planet = validate_id(Planet, planet_id)
+    planet = validate_planet(Planet, planet_id)
     db.session.delete(planet)
     db.session.commit()
     return make_response(
