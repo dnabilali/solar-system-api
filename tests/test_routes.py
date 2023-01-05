@@ -166,7 +166,7 @@ def test_delete_planet_1_with_json_request_body_returns_200(client, two_saved_pl
     response_body = response.get_json()
     
     assert response.status_code == 200
-    assert response_body == {"message": f"planet #1 has been deleted successfully"}, 200
+    assert response_body == {"message": "planet #1 has been deleted successfully"}
 
 def test_delete_planet_missing_record(client, two_saved_planets):
     response = client.delete("planets/3")
