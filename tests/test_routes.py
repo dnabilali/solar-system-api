@@ -1,3 +1,8 @@
+from werkzeug.exceptions import HTTPException
+from app.routes import validate_model
+from app.models.planet import Planet
+import pytest
+
 #Tests on GET
 def test_get_all_planets_with_empty_db_returns_empty_list(client):
     response = client.get("/planets")
@@ -124,3 +129,18 @@ def test_delete_planet_1_with_json_request_body_returns_200(client, two_saved_pl
     assert response_body == {"message": f"planet #1 has been deleted successfully"}, 200
 
 #Tests on valid_model(cls, model_id)
+def test_validate_model(two_saved_planets):
+    result_planet = validate_model(Planet, 1)
+
+    assert result_planet.id == 1
+    assert result_planet.name == "Earth"
+    assert result_planet.description == "rocky, terrestrial, full of life"
+    assert result_planet.mass == 5.972e24
+
+def test_validate_model_missing_record(two_saved_planets):
+    with pytest.raises(HTTPException):
+        result_planet = validate_model(Planet, 3)
+    
+def test_validate_model_invalid_id(two_saved_planets):
+    with pytest.raises(HTTPException):
+        result_planet = validate_model(Planet, "cat")
