@@ -127,7 +127,7 @@ def update_planet(planet_id):
     planet.mass = request_body["mass"] if "mass" in request_body else planet.mass
     db.session.commit()
     return make_response(
-        {"message": f"planet #{planet_id} Updated Successfully"}, 200
+        {"message": f"Planet #{planet_id} successfully updated"}, 200
     )
 
 

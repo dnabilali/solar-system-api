@@ -113,7 +113,47 @@ def test_update_planet_successfully(client, two_saved_planets):
     response = client.put("planets/1", json=test_data)
     
     assert response.status_code == 200
-    assert response.get_json() == {"message": "planet #1 Updated Successfully"}
+    assert response.get_json() == {"message": "Planet #1 successfully updated"}
+
+def test_update_planet_with_extra_keys(client, two_saved_planets):
+    test_data = {"name" : "earth", 
+            "description" : "terrestrial, full of life",     
+            "mass" : 5.97e24,
+            "moon": "Moon"}
+
+    response = client.put("planets/1", json=test_data)
+    response_body = response.get_json()
+
+    assert response.status_code == 200
+    assert response_body == {"message": "Planet #1 successfully updated"}
+
+
+def test_update_planet_missing_record(client, two_saved_planets):
+    test_data = {
+        "name": "Neptune", 
+        "description": "thick, windy", 
+        "mass":1.024e26
+    }
+
+    response = client.put("planets/3", json=test_data)
+    response_body = response.get_json()
+
+    assert response.status_code == 404
+    assert response_body == {"message": "Planet 3 not found"}
+
+
+def test_update_planet_invalid_id(client, two_saved_planets):
+    test_data = {
+        "name": "Neptune", 
+        "description": "thick, windy", 
+        "mass":1.024e26
+    }
+
+    response = client.put("planets/cat", json=test_data)
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {"message": "Planet cat invalid"}
 
 #Tests on Delete
 def test_delete_planet_1_with_json_request_body_returns_200(client, two_saved_planets):
