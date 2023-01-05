@@ -4,6 +4,11 @@ from ..models.moon import Moon
 
 moons_bp = Blueprint("moons", __name__, url_prefix = "/moons")
 
-# Add nested routes for the endpoint `/planets/<planet_id>/moons` to:
-# Create a Moon and link it to an existing Planet record
-# Fetch all Moons that a Planet is associated with
+@moons_bp.route("", methods=["GET"])
+def display_all_moons():
+    moons = Moon.query.all()
+    # fill http response
+    response_moons = []
+    for moon in moons:
+        response_moons.append(moon.to_dict())  
+    return jsonify(response_moons)
