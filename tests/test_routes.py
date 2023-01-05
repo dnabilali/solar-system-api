@@ -50,7 +50,7 @@ def test_get_planet_by_id_with_empty_db_returns_404(client):
     response = client.get("/planets/1")
     
     assert response.status_code == 404
-    assert response.get_json() == {"message" : "1 not found"}
+    assert response.get_json() == {"message" : "Planet 1 not found"}
 
 
 def test_update_planet_successfully(client, two_saved_planets):
@@ -67,7 +67,7 @@ def test_get_planet_by_invalid_id_returns_400(client, two_saved_planets):
     response = client.get("/planets/earth")
     
     assert response.status_code == 400
-    assert response.get_json() == {"message": "earth is an invalid planet id"}
+    assert response.get_json() == {"message": "Planet earth is an invalid planet id"}
 
 def test_get_planet_by_valid_data_returns_data_and_200(client, two_saved_planets):
     response = client.get("/planets")
