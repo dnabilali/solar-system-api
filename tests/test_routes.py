@@ -168,6 +168,20 @@ def test_delete_planet_1_with_json_request_body_returns_200(client, two_saved_pl
     assert response.status_code == 200
     assert response_body == {"message": f"planet #1 has been deleted successfully"}, 200
 
+def test_delete_planet_missing_record(client, two_saved_planets):
+    response = client.delete("planets/3")
+    response_body = response.get_json()
+
+    assert response.status_code == 404
+    assert response_body == {"message": "Planet 3 not found"}
+
+def test_delete_planet_invalid_id(client, two_saved_planets):
+    response = client.delete("planets/cat")
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {"message": "Planet cat invalid"}
+
 #Tests on valid_model(cls, model_id)
 def test_validate_model(two_saved_planets):
     result_planet = validate_model(Planet, 1)
