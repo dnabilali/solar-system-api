@@ -8,7 +8,7 @@ planets_bp = Blueprint("planets", __name__, url_prefix = "/planets")
 
 # ~~~~~~ Helper functions ~~~~~
 # TO DO: Create separate helper function module or add as class method #
-def validate_id(planet_id):
+def validate_id(cls, planet_id):
     """
     Checks if planet id is valid and returns error messages for invalid inputs
     :params:
@@ -20,14 +20,14 @@ def validate_id(planet_id):
         planet_id_int = int(planet_id)
     except:
         # handling invalid planet id type
-        abort(make_response({"message": f"{planet_id} is an invalid planet id"}, 400))
+        abort(make_response({"message": f"{cls.__name__} {planet_id} is an invalid planet id"}, 400))
 
     # return planet data if id in db
-    planet = Planet.query.get(planet_id)
+    planet = cls.query.get(planet_id)
 
     # handle nonexistant planet id
     if not planet:
-        abort(make_response({"message": f"{planet_id} not found"}, 404))
+        abort(make_response({"message": f"{cls.__name__} {planet_id} not found"}, 404))
     return planet
 
 def process_kwargs(queries):
@@ -92,7 +92,7 @@ def display_all_planets():
 # ~~~~~~ Single planet endpoint ~~~~~~
 @planets_bp.route("/<planet_id>",methods=["GET"])
 def display_planet(planet_id):
-    valid_planet = validate_id(planet_id)
+    valid_planet = validate_id(Planet, planet_id)
     return valid_planet.to_dict()
 
 @planets_bp.route("", methods=["POST"])
@@ -120,7 +120,7 @@ def create_planet():
 @planets_bp.route("/<planet_id>", methods=["PUT"])
 def update_planet(planet_id):
     request_body = request.get_json()
-    planet = validate_id(planet_id)
+    planet = validate_id(Planet, planet_id)
     planet.name = request_body["name"] if "name" in request_body else planet.name 
     planet.description = request_body["description"] if "description" in request_body else planet.description
     planet.mass = request_body["mass"] if "mass" in request_body else planet.mass
@@ -132,7 +132,7 @@ def update_planet(planet_id):
 
 @planets_bp.route("/<planet_id>", methods=["DELETE"])
 def delete_planet(planet_id):
-    planet = validate_id(planet_id)
+    planet = validate_id(Planet, planet_id)
     db.session.delete(planet)
     db.session.commit()
     return make_response(
