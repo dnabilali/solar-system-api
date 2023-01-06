@@ -6,8 +6,7 @@ from app.models.moon import Moon
 
 planets_bp = Blueprint("planets", __name__, url_prefix = "/planets")
 
-# ~~~~~~ Helper functions ~~~~~
-# TO DO: Create separate helper function module or add as class method #
+# ~~~~~~ Validation Checkers ~~~~~
 def validate_model(cls, model_id):
     """
     Checks if planet id is valid and returns error messages for invalid inputs
@@ -21,15 +20,13 @@ def validate_model(cls, model_id):
     except:
         # handling invalid planet id type
         abort(make_response({"message":f"{cls.__name__} {model_id} invalid"}, 400))
-
-
     # return planet data if id in db
     model = cls.query.get(model_id)
-
     # handle nonexistant planet id
     if not model:
         abort(make_response({"message":f"{cls.__name__} {model_id} not found"}, 404))
     return model
+
 
 def process_kwargs(queries):
     """
@@ -61,6 +58,8 @@ def process_kwargs(queries):
             ))
     return attrs, orderby, sels
 
+
+# ~~~~~~ Planet Routes ~~~~~
 @planets_bp.route("",methods= ["GET"])
 def display_all_planets():
     # collect query & parse kwargs
@@ -96,27 +95,21 @@ def display_planet(planet_id):
     valid_planet = validate_model(Planet, planet_id)
     return valid_planet.to_dict()
 
+
 @planets_bp.route("", methods=["POST"])
 def create_planet():
     request_body = request.get_json()
-
-    if "name" not in request_body or "description" not in request_body \
-            or "mass" not in request_body:
-        abort(make_response({"message" : \
-                "Failed to create a planet because the name and/or description \
-                and/or mass are missing"}, 400))
-
-    # new_planet = Planet(
-    #     name=request_body["name"],
-    #     description=request_body["description"],
-    #     mass=request_body["mass"])
-
+    attribute_requirements = ["name", "decription", "mass"]
+    for req in attribute_requirements:
+        if req not in request_body:
+            abort(make_response({
+                "message" : f"Failed to create a planet because {req} missing"
+                }, 400))
     new_planet = Planet.from_dict(request_body)
-
     db.session.add(new_planet)
     db.session.commit()
-
     return make_response({"message":"planet has been created successfully"}, 201)
+
 
 @planets_bp.route("/<planet_id>", methods=["PUT"])
 def update_planet(planet_id):
@@ -140,41 +133,30 @@ def delete_planet(planet_id):
         {"message": f"planet #{planet_id} has been deleted successfully"}, 200
     )
 
-# nested routes`/planets/<planet_id>/moons` to:
-# Create a Moon and link it to an existing Planet record
-# Fetch all Moons that a Planet is associated with
+
 @planets_bp.route("/<planet_id>/moons", methods=["POST"])
 def create_moon(planet_id):
     planet = validate_model(Planet, planet_id)
     request_body = request.get_json()
-    required_attributes = ["name", "size", "description", "discovery_date"]
-
+    required_attributes = Moon.get_all_attrs()
+    # check for all required post attributes in request body
     for attr in required_attributes:
         if attr not in request_body:
             abort(make_response(jsonify({
                 "message":f"{attr} must be included to add a moon"
             }), 400))
-
-    # TO DO: refactor using from_dict 
-    new_moon = Moon(
-        name=request_body["name"],
-        size=request_body["size"],
-        description=request_body["description"],
-        discovery_date=request_body["discovery_date"],
-        planet_id=planet_id,
-        planet=planet
-    )
+    new_moon = Moon.from_dict(request_body, planet, planet_id)
     db.session.add(new_moon)
     db.session.commit()
     return make_response({
         "message": f"Moon {new_moon.name} for Planet {planet.name} successfully created"
     }, 201)
 
+
 #nested routes GET `/planets/<planet_id>/moons`
 @planets_bp.route("/<planet_id>/moons", methods=["GET"])
 def read_moons(planet_id):
     planet = validate_model(Planet, planet_id)
-
     moons_response = []
     for moon in planet.moons:
         moons_response.append(moon.to_dict())  
