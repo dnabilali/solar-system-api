@@ -13,7 +13,7 @@ class Planet(db.Model):
         """
         Returns all existing attributes (list) in Planet class
         """
-        return [attr for attr in dir(Planet) if not attr.startswith('__')]
+        return [attr for attr in dir(Planet) if callable(attr)]
 
     @classmethod
     def from_dict(cls, dict):

@@ -4,6 +4,7 @@ from ..models.moon import Moon
 
 moons_bp = Blueprint("moons", __name__, url_prefix = "/moons")
 
+# ~~~~~~ Planet Routes ~~~~~
 @moons_bp.route("", methods=["GET"])
 def display_all_moons():
     moons = Moon.query.all()

@@ -1,8 +1,8 @@
-"""empty message
+"""Redoing migrations to debug errors
 
-Revision ID: bc96d5e6f467
+Revision ID: 2e9f4c3f0c72
 Revises: 
-Create Date: 2023-01-05 19:08:01.063060
+Create Date: 2023-01-06 12:22:34.301088
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'bc96d5e6f467'
+revision = '2e9f4c3f0c72'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -28,7 +28,7 @@ def upgrade():
     op.create_table('moons',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('name', sa.String(), nullable=False),
-    sa.Column('size', sa.String(), nullable=False),
+    sa.Column('size', sa.Float(), nullable=False),
     sa.Column('description', sa.String(), nullable=False),
     sa.Column('discovery_date', sa.DateTime(), nullable=False),
     sa.Column('planet_id', sa.Integer(), nullable=True),
