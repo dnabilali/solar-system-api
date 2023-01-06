@@ -154,7 +154,8 @@ def create_moon(planet_id):
             abort(make_response(jsonify({
                 "message":f"{attr} must be included to add a moon"
             }), 400))
-        
+
+    # TO DO: refactor using from_dict 
     new_moon = Moon(
         name=request_body["name"],
         size=request_body["size"],
@@ -168,3 +169,13 @@ def create_moon(planet_id):
     return make_response({
         "message": f"Moon {new_moon.name} for Planet {planet.name} successfully created"
     }, 201)
+
+#nested routes GET `/planets/<planet_id>/moons`
+@planets_bp.route("/<planet_id>/moons", methods=["GET"])
+def read_moons(planet_id):
+    planet = validate_model(Planet, planet_id)
+
+    moons_response = []
+    for moon in planet.moons:
+        moons_response.append(moon.to_dict())  
+    return jsonify(moons_response)   
