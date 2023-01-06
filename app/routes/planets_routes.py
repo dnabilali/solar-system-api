@@ -147,8 +147,19 @@ def delete_planet(planet_id):
 def create_moon(planet_id):
     planet = validate_model(Planet, planet_id)
     request_body = request.get_json()
+    required_attributes = ["name", "size", "description", "discovery_date"]
+
+    for attr in required_attributes:
+        if attr not in request_body:
+            abort(make_response(jsonify({
+                "message":f"{attr} must be included to add a moon"
+            }), 400))
+        
     new_moon = Moon(
         name=request_body["name"],
+        size=request_body["size"],
+        description=request_body["description"],
+        discovery_date=request_body["discovery_date"],
         planet_id=planet_id,
         planet=planet
     )
