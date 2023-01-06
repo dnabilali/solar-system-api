@@ -1,9 +1,8 @@
-"""Brand new migrations. Woo hoo
+"""empty message
 
-
-Revision ID: ffa329eb8e0b
+Revision ID: bc96d5e6f467
 Revises: 
-Create Date: 2023-01-05 11:47:27.099655
+Create Date: 2023-01-05 19:08:01.063060
 
 """
 from alembic import op
@@ -11,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ffa329eb8e0b'
+revision = 'bc96d5e6f467'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,6 +28,9 @@ def upgrade():
     op.create_table('moons',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('name', sa.String(), nullable=False),
+    sa.Column('size', sa.String(), nullable=False),
+    sa.Column('description', sa.String(), nullable=False),
+    sa.Column('discovery_date', sa.DateTime(), nullable=False),
     sa.Column('planet_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['planet_id'], ['planets.id'], ),
     sa.PrimaryKeyConstraint('id')
