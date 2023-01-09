@@ -41,3 +41,4 @@ class Moon(db.Model):
             "planet_id": self.planet_id,
             #"planet": self.planet.name,
         }
+    
