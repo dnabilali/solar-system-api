@@ -31,3 +31,7 @@ class Planet(db.Model):
             "description": self.description,
             "mass": self.mass
         }
+    # @classmethod
+    # def get_planet_by_id(cls, id):
+    #     return cls.query.get(id)
+        

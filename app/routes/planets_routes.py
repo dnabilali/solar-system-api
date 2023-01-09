@@ -99,7 +99,7 @@ def display_planet(planet_id):
 @planets_bp.route("", methods=["POST"])
 def create_planet():
     request_body = request.get_json()
-    attribute_requirements = ["name", "decription", "mass"]
+    attribute_requirements = ["name", "description", "mass"]
     for req in attribute_requirements:
         if req not in request_body:
             abort(make_response({
