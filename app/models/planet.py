@@ -16,7 +16,7 @@ class Planet(db.Model):
         return [attr for attr in dir(Planet) if callable(attr)]
 
     @classmethod
-    def from_dict(cls, dict, planet_id):
+    def from_dict(cls, dict):
         return Planet(name=dict["name"],
             description=dict["description"],
             mass=dict["mass"])

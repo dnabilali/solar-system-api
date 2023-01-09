@@ -102,8 +102,7 @@ def test_create_one_planet_missing_mass_return_400(client):
 
     assert response.status_code == 400
     assert response_body == {"message" : \
-                "Failed to create a planet because the name and/or description \
-                and/or mass are missing"}
+                "Failed to create a planet because mass missing"}
 
 #Tests on Put
 def test_update_planet_successfully(client, two_saved_planets):
